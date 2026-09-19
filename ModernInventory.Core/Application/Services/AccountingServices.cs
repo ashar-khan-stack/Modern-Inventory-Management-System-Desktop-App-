@@ -344,14 +344,19 @@ namespace ModernInventory.Core.Application.Services
             }
             if (startDate.HasValue)
             {
-                query = query.Where(e => e.Voucher.Date >= startDate.Value.Date);
+                var dt = startDate.Value.Date;
+                query = query.Where(e => e.Voucher != null && e.Voucher.Date >= dt);
             }
             if (endDate.HasValue)
             {
-                query = query.Where(e => e.Voucher.Date <= endDate.Value.Date.AddDays(1).AddSeconds(-1));
+                var dt = endDate.Value.Date.AddDays(1).AddSeconds(-1);
+                query = query.Where(e => e.Voucher != null && e.Voucher.Date <= dt);
             }
 
-            var entries = await query.OrderBy(e => e.Voucher.Date).ThenBy(e => e.Voucher.CreatedAt).ToListAsync();
+            var entries = await query
+                .OrderBy(e => e.Voucher != null ? e.Voucher.Date : DateTime.MinValue)
+                .ThenBy(e => e.Voucher != null ? e.Voucher.CreatedAt : DateTime.MinValue)
+                .ToListAsync();
             var accountHeads = await _context.AccountHeads.Where(a => a.BusinessId == businessId).ToDictionaryAsync(a => a.Id, a => a.Name);
 
             decimal runningBal = 0.00m;
@@ -359,14 +364,17 @@ namespace ModernInventory.Core.Application.Services
 
             foreach (var en in entries)
             {
+                var v = en.Voucher;
+                if (v == null) continue;
+
                 runningBal += (en.DebitAmount - en.CreditAmount);
                 result.Add(new LedgerItemDto
                 {
                     Id = en.Id,
-                    Date = en.Voucher.Date,
-                    VoucherNumber = en.Voucher.VoucherNumber,
+                    Date = v.Date,
+                    VoucherNumber = v.VoucherNumber,
                     AccountName = accountHeads.TryGetValue(en.AccountHeadId, out var name) ? name : "Account",
-                    Description = !string.IsNullOrEmpty(en.Notes) ? en.Notes : en.Voucher.Narration,
+                    Description = !string.IsNullOrEmpty(en.Notes) ? en.Notes : v.Narration,
                     Debit = en.DebitAmount,
                     Credit = en.CreditAmount,
                     RunningBalance = runningBal
