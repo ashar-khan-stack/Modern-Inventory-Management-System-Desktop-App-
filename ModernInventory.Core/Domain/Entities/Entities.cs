@@ -283,6 +283,7 @@ namespace ModernInventory.Core.Domain.Entities
     {
         public string Id { get; set; } = Guid.NewGuid().ToString();
         public string VoucherId { get; set; } = string.Empty;
+        public Voucher? Voucher { get; set; }
         public string AccountHeadId { get; set; } = string.Empty;
         public decimal DebitAmount { get; set; } = 0.00m;
         public decimal CreditAmount { get; set; } = 0.00m;

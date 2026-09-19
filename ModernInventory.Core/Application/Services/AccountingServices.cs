@@ -179,7 +179,6 @@ namespace ModernInventory.Core.Application.Services
                     Narration = dto.Narration ?? string.Empty,
                     Entries = dto.Entries.Select(e => new VoucherEntry
                     {
-                        BusinessId = businessId,
                         AccountHeadId = e.AccountHeadId,
                         DebitAmount = e.DebitAmount,
                         CreditAmount = e.CreditAmount,
@@ -264,8 +263,8 @@ namespace ModernInventory.Core.Application.Services
                         Narration = $"Expense: {expense.Title} ({expense.Category})",
                         Entries = new List<VoucherEntry>
                         {
-                            new() { BusinessId = businessId, AccountHeadId = expenseAccount.Id, DebitAmount = dto.Amount, CreditAmount = 0 },
-                            new() { BusinessId = businessId, AccountHeadId = cashAccount.Id, DebitAmount = 0, CreditAmount = dto.Amount }
+                            new() { AccountHeadId = expenseAccount.Id, DebitAmount = dto.Amount, CreditAmount = 0 },
+                            new() { AccountHeadId = cashAccount.Id, DebitAmount = 0, CreditAmount = dto.Amount }
                         }
                     };
                     _context.Vouchers.Add(voucher);
@@ -337,7 +336,7 @@ namespace ModernInventory.Core.Application.Services
         {
             var query = _context.VoucherEntries
                 .Include(e => e.Voucher)
-                .Where(e => e.BusinessId == e.Voucher.BusinessId && !e.Voucher.IsDeleted);
+                .Where(e => e.Voucher != null && e.Voucher.BusinessId == businessId && !e.Voucher.IsDeleted);
 
             if (!string.IsNullOrEmpty(accountHeadId))
             {
