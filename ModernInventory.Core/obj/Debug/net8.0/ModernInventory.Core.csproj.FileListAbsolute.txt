@@ -1,0 +1,14 @@
+/app/applet/ModernInventory.Core/bin/Debug/net8.0/ModernInventory.Core.deps.json
+/app/applet/ModernInventory.Core/bin/Debug/net8.0/ModernInventory.Core.runtimeconfig.json
+/app/applet/ModernInventory.Core/bin/Debug/net8.0/ModernInventory.Core.dll
+/app/applet/ModernInventory.Core/bin/Debug/net8.0/ModernInventory.Core.pdb
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.csproj.AssemblyReference.cache
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.GeneratedMSBuildEditorConfig.editorconfig
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.AssemblyInfoInputs.cache
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.AssemblyInfo.cs
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.csproj.CoreCompileInputs.cache
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.dll
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/refint/ModernInventory.Core.dll
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.pdb
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ModernInventory.Core.genruntimeconfig.cache
+/app/applet/ModernInventory.Core/obj/Debug/net8.0/ref/ModernInventory.Core.dll

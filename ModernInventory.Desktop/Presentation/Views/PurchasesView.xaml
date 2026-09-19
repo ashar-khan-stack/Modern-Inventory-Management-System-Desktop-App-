@@ -1,0 +1,106 @@
+<UserControl x:Class="ModernInventory.Desktop.Presentation.Views.PurchasesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:conv="clr-namespace:ModernInventory.Desktop.Presentation.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="750" d:DesignWidth="1100">
+
+    <UserControl.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:BooleanToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True" />
+        <conv:CurrencyFormatConverter x:Key="CurrencyFormat" />
+        <conv:StringNullOrEmptyToVisibilityConverter x:Key="StringNotEmptyToVis" />
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Style="{StaticResource CardBorderStyle}" Margin="0,0,0,16" Padding="16,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Purchase History" Foreground="White" FontSize="18" FontWeight="Bold" />
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal">
+                    <Button Content="New Purchase" Command="{Binding OpenCreatePurchaseCommand}" Style="{StaticResource PrimaryButtonStyle}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Purchase DataGrid -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorderStyle}" Padding="0">
+            <DataGrid ItemsSource="{Binding Purchases}" SelectedItem="{Binding SelectedPurchase}"
+                      AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                      Background="Transparent" BorderThickness="0" RowBackground="#1E293B" AlternatingRowBackground="#0F172A"
+                      Foreground="White" GridLinesVisibility="Horizontal" HorizontalGridLinesBrush="#334155"
+                      HeadersVisibility="Column" ColumnHeaderHeight="38" RowHeight="42" Margin="8">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Bill #" Binding="{Binding BillNumber}" Width="1.2*" FontWeight="SemiBold" />
+                    <DataGridTextColumn Header="Supplier" Binding="{Binding SupplierName}" Width="2*" />
+                    <DataGridTextColumn Header="Date" Binding="{Binding PurchaseDate, StringFormat='{}{0:yyyy-MM-dd}'}" Width="1*" />
+                    <DataGridTextColumn Header="Grand Total" Binding="{Binding GrandTotal, Converter={StaticResource CurrencyFormat}}" Width="1.2*" />
+                    <DataGridTextColumn Header="Due Balance" Binding="{Binding DueBalance, Converter={StaticResource CurrencyFormat}}" Width="1.2*" Foreground="#F87171" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
+
+        <!-- Purchase Creator Modal -->
+        <Grid Grid.Row="0" Grid.RowSpan="2" Background="#AA000000" Visibility="{Binding IsCreatorOpen, Converter={StaticResource BoolToVis}}">
+            <Border Width="800" Height="600" Style="{StaticResource CardBorderStyle}" Padding="20" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0" Text="Create New Purchase" Foreground="White" FontSize="18" FontWeight="Bold" Margin="0,0,0,16" />
+
+                    <Grid Grid.Row="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Select Supplier" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                            <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplierForPurchase}" DisplayMemberPath="Name" Style="{StaticResource ModernTextBoxStyle}" />
+                            
+                            <TextBlock Text="Select Product" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,8,0,4" />
+                            <ComboBox ItemsSource="{Binding Products}" SelectedItem="{x:Null}" DisplayMemberPath="Name" SelectionChanged="ProductComboBox_SelectionChanged" Style="{StaticResource ModernTextBoxStyle}" />
+                        </StackPanel>
+                        
+                        <DataGrid Grid.Column="1" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" Margin="8,0,0,0" CanUserAddRows="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Product" Binding="{Binding ProductName}" Width="*" />
+                                <DataGridTextColumn Header="Qty" Binding="{Binding Quantity}" Width="50" />
+                                <DataGridTextColumn Header="Cost" Binding="{Binding UnitCost}" Width="60" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+
+                    <StackPanel Grid.Row="2" Margin="0,16,0,0">
+                        <TextBlock Text="{Binding GrandTotal, StringFormat='Total: {0:C}'}" Foreground="White" FontSize="16" FontWeight="Bold" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="Cancel" Command="{Binding CloseCreatorCommand}" Background="#334155" Foreground="White" Margin="0,0,4,0" />
+                            <Button Grid.Column="1" Content="Save Purchase" Command="{Binding SavePurchaseCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="4,0,0,0" />
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,0 +1,8 @@
+{
+  "name": "Modern Inventory Management System(Desktop App)",
+  "description": "Desktop business inventory, accounting, point-of-sale, and tax invoice system with high-performance offline-first local persistence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

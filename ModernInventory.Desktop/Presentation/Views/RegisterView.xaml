@@ -1,0 +1,100 @@
+<UserControl x:Class="ModernInventory.Desktop.Presentation.Views.RegisterView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:conv="clr-namespace:ModernInventory.Desktop.Presentation.Converters"
+             mc:Ignorable="d" 
+             d:DesignHeight="780" d:DesignWidth="900">
+
+    <UserControl.Resources>
+        <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
+    </UserControl.Resources>
+
+    <Grid Background="#0A0F1D">
+        <Border Width="520" HorizontalAlignment="Center" VerticalAlignment="Center"
+                Background="#131D31" BorderBrush="#22324F" BorderThickness="1"
+                CornerRadius="12" Padding="32">
+            <StackPanel>
+                <TextBlock Text="Register Business &amp; Master Admin" Foreground="White" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" />
+                <TextBlock Text="Creates local SQLite database with Chart of Accounts" Foreground="{StaticResource TextMutedBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,20" />
+
+                <!-- Error Alert Box -->
+                <Border Background="#7F1D1D" BorderBrush="#DC2626" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,16"
+                        Visibility="{Binding ErrorMessage, Converter={StaticResource BoolToVis}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="#FECACA" FontSize="12" TextWrapping="Wrap" />
+                </Border>
+
+                <!-- Business Name & Owner Name -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Business Name *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding BusinessName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Owner / Admin Name *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding OwnerName, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Email & Phone -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Email Address *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Phone (+92)" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Password & Confirm Password -->
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Password (PBKDF2 100k) *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="Confirm Password *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <TextBox Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Security Question & Answer -->
+                <TextBlock Text="Security Question (for Password Recovery) *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                <TextBox Text="{Binding SecurityQuestion, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" Margin="0,0,0,12" />
+
+                <TextBlock Text="Security Answer *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                <TextBox Text="{Binding SecurityAnswer, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" Margin="0,0,0,20" />
+
+                <!-- Submit Button -->
+                <Button Content="Complete Registration &amp; Initialize System" Command="{Binding RegisterCommand}" Style="{StaticResource PrimaryButtonStyle}" Height="42" Margin="0,0,0,16" />
+
+                <!-- Back to Login -->
+                <Button Content="Already registered? Sign In" Command="{Binding GoToLoginCommand}" Background="Transparent" Foreground="{StaticResource TextMutedBrush}" BorderThickness="0" Cursor="Hand" FontSize="13" HorizontalAlignment="Center" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>
