@@ -408,12 +408,22 @@ namespace ModernInventory.Tests
             string dbPath = Path.Combine(tempDir, "source.db");
             string backupDir = Path.Combine(tempDir, "Backups");
 
-            using (var conn = new SqliteConnection($"Data Source={dbPath}"))
+            var connStr = new SqliteConnectionStringBuilder
+            {
+                DataSource = dbPath,
+                Pooling = false
+            }.ToString();
+
+            await using (var conn = new SqliteConnection(connStr))
             {
                 await conn.OpenAsync();
-                var cmd = conn.CreateCommand();
-                cmd.CommandText = "CREATE TABLE TestTable (Id INTEGER PRIMARY KEY, Val TEXT); INSERT INTO TestTable VALUES (1, 'OK');";
-                await cmd.ExecuteNonQueryAsync();
+                await using (var cmd = conn.CreateCommand())
+                {
+                    cmd.CommandText = "CREATE TABLE TestTable (Id INTEGER PRIMARY KEY, Val TEXT); INSERT INTO TestTable VALUES (1, 'OK');";
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                await conn.CloseAsync();
+                SqliteConnection.ClearPool(conn);
             }
 
             string businessId = Guid.NewGuid().ToString();
@@ -438,12 +448,22 @@ namespace ModernInventory.Tests
             string validDbPath = Path.Combine(tempDir, "valid.db");
             string corruptDbPath = Path.Combine(tempDir, "corrupt.db");
 
-            using (var validConn = new SqliteConnection($"Data Source={validDbPath}"))
+            var connStr = new SqliteConnectionStringBuilder
+            {
+                DataSource = validDbPath,
+                Pooling = false
+            }.ToString();
+
+            await using (var validConn = new SqliteConnection(connStr))
             {
                 await validConn.OpenAsync();
-                var cmd = validConn.CreateCommand();
-                cmd.CommandText = "CREATE TABLE TestTable (Id INTEGER PRIMARY KEY, Val TEXT); INSERT INTO TestTable VALUES (1, 'OK');";
-                await cmd.ExecuteNonQueryAsync();
+                await using (var cmd = validConn.CreateCommand())
+                {
+                    cmd.CommandText = "CREATE TABLE TestTable (Id INTEGER PRIMARY KEY, Val TEXT); INSERT INTO TestTable VALUES (1, 'OK');";
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                await validConn.CloseAsync();
+                SqliteConnection.ClearPool(validConn);
             }
 
             File.WriteAllText(corruptDbPath, "This is corrupt garbage text, not SQLite database!");

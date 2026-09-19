@@ -186,7 +186,7 @@ namespace ModernInventory.Core.Application.Services
             var fileInfo = new FileInfo(backupFilePath);
             string checksum;
             using (var sha256 = SHA256.Create())
-            using (var stream = File.OpenRead(backupFilePath))
+            await using (var stream = new FileStream(backupFilePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 4096, useAsync: true))
             {
                 var hashBytes = await sha256.ComputeHashAsync(stream);
                 checksum = BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
@@ -225,12 +225,20 @@ namespace ModernInventory.Core.Application.Services
                 return false;
             }
 
+            SqliteConnection? conn = null;
             try
             {
-                using var conn = new SqliteConnection($"Data Source={backupFilePath};Mode=ReadOnly");
+                var connectionString = new SqliteConnectionStringBuilder
+                {
+                    DataSource = backupFilePath,
+                    Mode = SqliteOpenMode.ReadOnly,
+                    Pooling = false
+                }.ToString();
+
+                conn = new SqliteConnection(connectionString);
                 await conn.OpenAsync();
 
-                using var cmd = conn.CreateCommand();
+                await using var cmd = conn.CreateCommand();
                 cmd.CommandText = "PRAGMA integrity_check;";
                 var result = (string?)await cmd.ExecuteScalarAsync();
 
@@ -239,6 +247,25 @@ namespace ModernInventory.Core.Application.Services
             catch
             {
                 return false;
+            }
+            finally
+            {
+                if (conn != null)
+                {
+                    try
+                    {
+                        conn.Close();
+                        SqliteConnection.ClearPool(conn);
+                    }
+                    catch
+                    {
+                        // Ignore cleanup exceptions
+                    }
+                    finally
+                    {
+                        conn.Dispose();
+                    }
+                }
             }
         }
 
@@ -262,6 +289,9 @@ namespace ModernInventory.Core.Application.Services
             {
                 File.Copy(targetDbPath, snapshotPath, true);
             }
+
+            // Clear connection pools before replacing target database file
+            SqliteConnection.ClearAllPools();
 
             // Copy verified backup over target database file
             File.Copy(backupFilePath, targetDbPath, true);
