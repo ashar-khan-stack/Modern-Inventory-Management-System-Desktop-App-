@@ -97,9 +97,9 @@
                              Style="{StaticResource ModernTextBoxStyle}" Tag="Search Name, SKU, Barcode..." />
                     
                     <!-- Category Filter Dropdown -->
-                    <ComboBox Width="160" ItemsSource="{Binding Categories}" SelectedValue="{Binding SelectedCategoryId}"
+                    <ComboBox Width="180" ItemsSource="{Binding Categories}" SelectedValue="{Binding SelectedCategoryId}"
                               SelectedValuePath="Id" DisplayMemberPath="Name" Margin="8,0,0,0"
-                              Background="#0F172A" Foreground="White" Padding="8,6" />
+                              Style="{StaticResource ModernComboBoxStyle}" Height="36" />
 
                     <!-- Low Stock Filter Toggle -->
                     <CheckBox Content="Low Stock Only" IsChecked="{Binding ShowLowStockOnly}" Foreground="White" VerticalAlignment="Center" Margin="12,0,0,0" />
@@ -273,13 +273,13 @@
                                     <TextBlock Text="Category" Foreground="{StaticResource TextMutedBrush}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4" />
                                     <ComboBox ItemsSource="{Binding Categories}" SelectedValue="{Binding FormCategoryId}"
                                               SelectedValuePath="Id" DisplayMemberPath="Name"
-                                              Background="#0F172A" Foreground="White" Padding="8,6" />
+                                              Style="{StaticResource ModernComboBoxStyle}" Height="36" />
                                 </StackPanel>
 
                                 <StackPanel Grid.Column="1">
                                     <TextBlock Text="Unit" Foreground="{StaticResource TextMutedBrush}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,4" />
                                     <ComboBox ItemsSource="{Binding SupportedUnits}" SelectedItem="{Binding FormUnit}"
-                                              Background="#0F172A" Foreground="White" Padding="8,6" />
+                                              Style="{StaticResource ModernComboBoxStyle}" Height="36" />
                                 </StackPanel>
                             </Grid>
 

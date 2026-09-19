@@ -7,6 +7,7 @@ using ModernInventory.Core.Application.Repositories;
 using ModernInventory.Core.Application.Services;
 using ModernInventory.Core.Infrastructure.Database;
 using ModernInventory.Core.Infrastructure.Security;
+using ModernInventory.Desktop.Infrastructure;
 using ModernInventory.Desktop.Presentation.ViewModels;
 
 namespace ModernInventory.Desktop
@@ -19,18 +20,30 @@ namespace ModernInventory.Desktop
         {
             base.OnStartup(e);
 
+            // Global exception handling to local log file
+            DispatcherUnhandledException += (s, args) =>
+            {
+                LocalPathProvider.LogError("DispatcherUnhandledException", args.Exception);
+                args.Handled = true;
+                MessageBox.Show($"An unexpected error occurred: {args.Exception.Message}\n\nCheck local logs in {LocalPathProvider.LogsDirectory}", "Application Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+            };
+
+            AppDomain.CurrentDomain.UnhandledException += (s, args) =>
+            {
+                if (args.ExceptionObject is Exception ex)
+                {
+                    LocalPathProvider.LogError("AppDomainUnhandledException", ex);
+                }
+            };
+
+            // Ensure robust local directories exist
+            LocalPathProvider.EnsureDirectories();
+
             var services = new ServiceCollection();
 
-            // SQLite Local Database Path
-            var appDataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ModernInventoryDesktop");
-            if (!Directory.Exists(appDataFolder))
-            {
-                Directory.CreateDirectory(appDataFolder);
-            }
-            var dbPath = Path.Combine(appDataFolder, "modern_inventory.db");
-
+            // SQLite Local Database Path with pooling disabled for deterministic lock management
             services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlite($"Data Source={dbPath}"));
+                options.UseSqlite($"Data Source={LocalPathProvider.DatabasePath};Pooling=false;"));
 
             // Core Security & Repositories & Services
             services.AddSingleton<IPasswordHasher, PasswordHasher>();
@@ -53,6 +66,7 @@ namespace ModernInventory.Desktop
             services.AddScoped<ISaleService, SaleService>();
             services.AddScoped<IBackupService, BackupService>();
             services.AddScoped<ISyncQueueService, SyncQueueService>();
+            services.AddScoped<IAccountingService, AccountingService>();
 
             // ViewModels
             services.AddSingleton<MainViewModel>();
@@ -71,6 +85,7 @@ namespace ModernInventory.Desktop
             services.AddTransient<PurchasesViewModel>();
             services.AddTransient<POSViewModel>();
             services.AddTransient<SalesViewModel>();
+            services.AddTransient<AccountingViewModel>();
 
             ServiceProvider = services.BuildServiceProvider();
 
@@ -81,11 +96,15 @@ namespace ModernInventory.Desktop
                 db.Database.EnsureCreated();
             }
 
+            var mainVm = ServiceProvider.GetRequiredService<MainViewModel>();
             var mainWindow = new MainWindow
             {
-                DataContext = ServiceProvider.GetRequiredService<MainViewModel>()
+                DataContext = mainVm
             };
             mainWindow.Show();
+
+            // Check for persistent session on startup
+            _ = mainVm.TryRestoreSessionAsync();
         }
     }
 }

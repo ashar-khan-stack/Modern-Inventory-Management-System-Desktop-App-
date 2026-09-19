@@ -9,6 +9,12 @@
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
     <AssemblyName>ModernInventory.Desktop</AssemblyName>
     <RootNamespace>ModernInventory.Desktop</RootNamespace>
+    <Version>1.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <Product>Modern Inventory Management System</Product>
+    <Company>Modern Inventory</Company>
+    <Description>Enterprise-grade offline-first Windows inventory management system</Description>
   </PropertyGroup>
 
   <ItemGroup>

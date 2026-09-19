@@ -1,12 +1,14 @@
 using System;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using ModernInventory.Core.Application.DTOs;
 using ModernInventory.Core.Application.Services;
 using ModernInventory.Core.Domain.Entities;
+using ModernInventory.Desktop.Infrastructure;
 
 namespace ModernInventory.Desktop.Presentation.ViewModels
 {
@@ -26,6 +28,7 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
         private readonly ISaleService _saleService;
         private readonly ISupplierService _supplierService;
         private readonly IPurchaseService _purchaseService;
+        private readonly IAccountingService _accountingService;
 
         [ObservableProperty]
         private object? _currentView;
@@ -64,7 +67,8 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
             IEmployeeService employeeService,
             ISaleService saleService,
             ISupplierService supplierService,
-            IPurchaseService purchaseService)
+            IPurchaseService purchaseService,
+            IAccountingService accountingService)
         {
             _authService = authService;
             _dashboardService = dashboardService;
@@ -76,6 +80,7 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
             _saleService = saleService;
             _supplierService = supplierService;
             _purchaseService = purchaseService;
+            _accountingService = accountingService;
 
             // Default to Login View if not authenticated
             NavigateToLogin();
@@ -90,8 +95,37 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
             BusinessId = auth.BusinessId ?? string.Empty;
             UserToken = auth.Token ?? string.Empty;
 
+            _ = LocalSessionManager.SaveSessionAsync(UserToken, UserEmail);
+
             NavigateToDashboard();
             _ = UpdateSyncStatusAsync();
+        }
+
+        public async Task TryRestoreSessionAsync()
+        {
+            try
+            {
+                var savedToken = await LocalSessionManager.GetSavedTokenAsync();
+                if (!string.IsNullOrWhiteSpace(savedToken))
+                {
+                    var result = await _authService.ValidateSessionAsync(savedToken);
+                    if (result.Success)
+                    {
+                        SetAuthenticatedUser(result);
+                        return;
+                    }
+                    else
+                    {
+                        await LocalSessionManager.ClearSessionAsync();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LocalPathProvider.LogError("TryRestoreSession", ex);
+            }
+
+            NavigateToLogin();
         }
 
         [RelayCommand]
@@ -197,12 +231,32 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
         }
 
         [RelayCommand]
+        public void NavigateToAccounting()
+        {
+            ActiveSection = "Accounting & Vouchers";
+            var vm = App.ServiceProvider.GetRequiredService<AccountingViewModel>();
+            _ = vm.InitializeAsync(BusinessId);
+            CurrentView = vm;
+        }
+
+        [RelayCommand]
+        public void NavigateToReports()
+        {
+            ActiveSection = "Reports & P&L";
+            var vm = App.ServiceProvider.GetRequiredService<AccountingViewModel>();
+            _ = vm.InitializeAsync(BusinessId);
+            CurrentView = vm;
+        }
+
+        [RelayCommand]
         public async Task LogoutAsync()
         {
             if (!string.IsNullOrEmpty(UserToken))
             {
                 await _authService.LogoutAsync(UserToken);
             }
+
+            await LocalSessionManager.ClearSessionAsync();
 
             IsAuthenticated = false;
             UserEmail = string.Empty;
@@ -235,6 +289,9 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
         private string _password = string.Empty;
 
         [ObservableProperty]
+        private bool _isPasswordVisible = false;
+
+        [ObservableProperty]
         private bool _rememberMe = true;
 
         [ObservableProperty]
@@ -250,26 +307,48 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
         }
 
         [RelayCommand]
+        public void TogglePasswordVisibility()
+        {
+            IsPasswordVisible = !IsPasswordVisible;
+        }
+
+        [RelayCommand]
         public async Task LoginAsync()
         {
             ErrorMessage = string.Empty;
+
+            var trimmedEmail = Email?.Trim() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(trimmedEmail) || string.IsNullOrWhiteSpace(Password))
+            {
+                ErrorMessage = "Email and password are required.";
+                return;
+            }
+
+            if (!Regex.IsMatch(trimmedEmail, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                ErrorMessage = "Please enter a valid email address.";
+                return;
+            }
+
             IsLoading = true;
 
             try
             {
-                var result = await _authService.LoginAsync(Email, Password, RememberMe);
+                var result = await _authService.LoginAsync(trimmedEmail, Password, RememberMe);
                 if (result.Success)
                 {
+                    await LocalSessionManager.SaveSessionAsync(result.Token!, result.Email ?? trimmedEmail);
                     _mainVm.SetAuthenticatedUser(result);
                 }
                 else
                 {
-                    ErrorMessage = result.ErrorMessage ?? "Invalid credentials.";
+                    ErrorMessage = result.ErrorMessage ?? "Invalid email or password.";
                 }
             }
             catch (Exception ex)
             {
                 ErrorMessage = $"Login error: {ex.Message}";
+                LocalPathProvider.LogError("Login", ex);
             }
             finally
             {
@@ -305,7 +384,13 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
         private string _password = string.Empty;
 
         [ObservableProperty]
+        private bool _isPasswordVisible = false;
+
+        [ObservableProperty]
         private string _confirmPassword = string.Empty;
+
+        [ObservableProperty]
+        private bool _isConfirmPasswordVisible = false;
 
         [ObservableProperty]
         private string _securityQuestion = "What is your primary phone?";
@@ -326,9 +411,57 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
         }
 
         [RelayCommand]
+        public void TogglePasswordVisibility()
+        {
+            IsPasswordVisible = !IsPasswordVisible;
+        }
+
+        [RelayCommand]
+        public void ToggleConfirmPasswordVisibility()
+        {
+            IsConfirmPasswordVisible = !IsConfirmPasswordVisible;
+        }
+
+        [RelayCommand]
         public async Task RegisterAsync()
         {
             ErrorMessage = string.Empty;
+
+            var trimmedBizName = BusinessName?.Trim() ?? string.Empty;
+            var trimmedOwnerName = OwnerName?.Trim() ?? string.Empty;
+            var trimmedEmail = Email?.Trim() ?? string.Empty;
+            var trimmedPhone = Phone?.Trim() ?? string.Empty;
+            var trimmedAnswer = SecurityAnswer?.Trim() ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(trimmedBizName) || trimmedBizName.Length < 2)
+            {
+                ErrorMessage = "Business Name is required (at least 2 characters).";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(trimmedOwnerName) || trimmedOwnerName.Length < 2)
+            {
+                ErrorMessage = "Owner Full Name is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(trimmedEmail) || !Regex.IsMatch(trimmedEmail, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            {
+                ErrorMessage = "A valid business email address is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(trimmedPhone) || trimmedPhone.Length < 7)
+            {
+                ErrorMessage = "A valid contact phone number is required.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(Password) || Password.Length < 6)
+            {
+                ErrorMessage = "Password must be at least 6 characters long.";
+                return;
+            }
 
             if (Password != ConfirmPassword)
             {
@@ -336,9 +469,9 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(SecurityAnswer))
+            if (string.IsNullOrWhiteSpace(trimmedAnswer) || trimmedAnswer.Length < 2)
             {
-                ErrorMessage = "Security answer is required for account recovery.";
+                ErrorMessage = "Security recovery answer is required.";
                 return;
             }
 
@@ -347,19 +480,20 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
             {
                 var req = new RegisterRequestDto
                 {
-                    BusinessName = BusinessName,
-                    OwnerName = OwnerName,
-                    Email = Email,
-                    Phone = Phone,
+                    BusinessName = trimmedBizName,
+                    OwnerName = trimmedOwnerName,
+                    Email = trimmedEmail,
+                    Phone = trimmedPhone,
                     Password = Password,
                     SecurityQuestion = SecurityQuestion,
-                    SecurityAnswer = SecurityAnswer,
+                    SecurityAnswer = trimmedAnswer,
                     Currency = "PKR"
                 };
 
                 var result = await _authService.RegisterAsync(req);
                 if (result.Success)
                 {
+                    await LocalSessionManager.SaveSessionAsync(result.Token!, result.Email ?? trimmedEmail);
                     _mainVm.SetAuthenticatedUser(result);
                 }
                 else
@@ -370,6 +504,7 @@ namespace ModernInventory.Desktop.Presentation.ViewModels
             catch (Exception ex)
             {
                 ErrorMessage = $"Registration error: {ex.Message}";
+                LocalPathProvider.LogError("Register", ex);
             }
             finally
             {

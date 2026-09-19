@@ -101,7 +101,7 @@ namespace ModernInventory.Core.Application.Services
                 Token = Guid.NewGuid().ToString("N"),
                 RememberMe = true,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(30)
+                ExpiresAt = DateTime.MaxValue
             };
 
             await _context.Businesses.AddAsync(business);
@@ -153,7 +153,7 @@ namespace ModernInventory.Core.Application.Services
                 Token = Guid.NewGuid().ToString("N"),
                 RememberMe = rememberMe,
                 CreatedAt = DateTime.UtcNow,
-                ExpiresAt = DateTime.UtcNow.AddDays(rememberMe ? 30 : 1)
+                ExpiresAt = DateTime.MaxValue
             };
 
             await _context.UserSessions.AddAsync(session);
@@ -179,7 +179,7 @@ namespace ModernInventory.Core.Application.Services
             }
 
             var session = await _context.UserSessions
-                .FirstOrDefaultAsync(s => s.Token == token && !s.IsRevoked && s.ExpiresAt > DateTime.UtcNow);
+                .FirstOrDefaultAsync(s => s.Token == token && !s.IsRevoked);
 
             if (session == null)
             {

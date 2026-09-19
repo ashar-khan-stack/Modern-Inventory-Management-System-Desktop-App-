@@ -16,6 +16,7 @@
     <Window.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
         <conv:BooleanToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True" />
+        <conv:EqualityToBooleanConverter x:Key="EqualityToBoolConverter" />
 
         <!-- DataTemplates for ViewModels -->
         <DataTemplate DataType="{x:Type vm:LoginViewModel}">
@@ -62,6 +63,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:SalesViewModel}">
             <views:SalesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AccountingViewModel}">
+            <views:AccountingView />
         </DataTemplate>
     </Window.Resources>
 
@@ -118,69 +122,73 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel Margin="12,0">
                             <Button Content="📊  Dashboard" Command="{Binding NavigateToDashboardCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,10" Margin="0,2"
-                                    Background="{StaticResource PrimaryBrush}" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Dashboard}" />
 
                             <Separator Margin="0,8" Background="{StaticResource BorderDarkBrush}" />
                             <TextBlock Text="INVENTORY &amp; STOCK" Foreground="{StaticResource TextMutedBrush}" FontSize="10" FontWeight="Bold" Margin="12,4" />
 
                             <Button Content="📦  Products &amp; Stock" Command="{Binding NavigateToProductsCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Products}" />
 
                             <Button Content="🏷️  Categories" Command="{Binding NavigateToCategoriesCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Categories}" />
 
                             <Button Content="⚖️  Stock Adjustments" Command="{Binding NavigateToStockAdjustmentsCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=StockAdjustments}" />
 
                             <Button Content="📜  Stock Movement History" Command="{Binding NavigateToStockHistoryCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=StockHistory}" />
 
                             <Separator Margin="0,8" Background="{StaticResource BorderDarkBrush}" />
                             <TextBlock Text="SYSTEM" Foreground="{StaticResource TextMutedBrush}" FontSize="10" FontWeight="Bold" Margin="12,4" />
 
                             <Button Content="💾  Backup &amp; Sync" Command="{Binding NavigateToBackupSyncCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=BackupSync}" />
 
                             <Separator Margin="0,8" Background="{StaticResource BorderDarkBrush}" />
                             <TextBlock Text="POINT OF SALE &amp; SALES" Foreground="{StaticResource TextMutedBrush}" FontSize="10" FontWeight="Bold" Margin="12,4" />
 
                             <Button Content="🛒  Point of Sale (POS)" Command="{Binding NavigateToPOSCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=POS}" />
 
                             <Button Content="🧾  Sales &amp; Invoices" Command="{Binding NavigateToSalesCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Sales}" />
 
                             <Separator Margin="0,8" Background="{StaticResource BorderDarkBrush}" />
                             <TextBlock Text="PARTIES &amp; STAKEHOLDERS" Foreground="{StaticResource TextMutedBrush}" FontSize="10" FontWeight="Bold" Margin="12,4" />
 
                             <Button Content="👥  Customers &amp; Khata" Command="{Binding NavigateToCustomersCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Customers}" />
 
                             <Button Content="👔  Staff &amp; Employees" Command="{Binding NavigateToEmployeesCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Employees}" />
 
                             <Separator Margin="0,8" Background="{StaticResource BorderDarkBrush}" />
                             <TextBlock Text="PURCHASES &amp; PAYABLES" Foreground="{StaticResource TextMutedBrush}" FontSize="10" FontWeight="Bold" Margin="12,4" />
 
                             <Button Content="👤  Suppliers" Command="{Binding NavigateToSuppliersCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Suppliers}" />
 
                             <Button Content="🛒  Purchases &amp; Bills" Command="{Binding NavigateToPurchasesCommand}" 
-                                    HorizontalContentAlignment="Left" Padding="12,8" Margin="0,2"
-                                    Background="Transparent" Foreground="{StaticResource TextWhiteBrush}" BorderThickness="0" Cursor="Hand" />
-                            <Button Content="📒  Accounting &amp; Vouchers" IsEnabled="False" HorizontalContentAlignment="Left" Padding="12,7" Margin="0,1" Background="Transparent" Foreground="#64748B" BorderThickness="0" />
-                            <Button Content="📈  Reports &amp; P&amp;L" IsEnabled="False" HorizontalContentAlignment="Left" Padding="12,7" Margin="0,1" Background="Transparent" Foreground="#64748B" BorderThickness="0" />
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Purchases}" />
+                            <Button Content="📒  Accounting &amp; Vouchers" Command="{Binding NavigateToAccountingCommand}" 
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Accounting &amp; Vouchers}" />
+                            <Button Content="📈  Reports &amp; P&amp;L" Command="{Binding NavigateToReportsCommand}" 
+                                    Style="{StaticResource SidebarNavButtonStyle}"
+                                    Tag="{Binding ActiveSection, Converter={StaticResource EqualityToBoolConverter}, ConverterParameter=Reports &amp; P&amp;L}" />
                         </StackPanel>
                     </ScrollViewer>
                 </DockPanel>

@@ -34,7 +34,7 @@ const DesktopAppContent: React.FC = () => {
         </div>
         <div className="flex items-center gap-2 text-xs text-neutral-400">
           <Loader2 className="w-4 h-4 animate-spin text-emerald-500" />
-          <span>Verifying 30-Day Session & SQLite Storage...</span>
+          <span>Verifying Persistent Session &amp; SQLite Storage...</span>
         </div>
       </div>
     );

@@ -73,10 +73,10 @@
                         
                         <StackPanel Grid.Column="0" Margin="0,0,8,0">
                             <TextBlock Text="Select Supplier" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
-                            <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplierForPurchase}" DisplayMemberPath="Name" Style="{StaticResource ModernTextBoxStyle}" />
+                            <ComboBox ItemsSource="{Binding Suppliers}" SelectedItem="{Binding SelectedSupplierForPurchase}" DisplayMemberPath="Name" Style="{StaticResource ModernComboBoxStyle}" Margin="0,0,0,8" />
                             
                             <TextBlock Text="Select Product" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,8,0,4" />
-                            <ComboBox ItemsSource="{Binding Products}" SelectedItem="{x:Null}" DisplayMemberPath="Name" SelectionChanged="ProductComboBox_SelectionChanged" Style="{StaticResource ModernTextBoxStyle}" />
+                            <ComboBox ItemsSource="{Binding Products}" SelectedItem="{x:Null}" DisplayMemberPath="Name" SelectionChanged="ProductComboBox_SelectionChanged" Style="{StaticResource ModernComboBoxStyle}" />
                         </StackPanel>
                         
                         <DataGrid Grid.Column="1" ItemsSource="{Binding CartItems}" AutoGenerateColumns="False" Margin="8,0,0,0" CanUserAddRows="False">

@@ -2,12 +2,22 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:ModernInventory.Desktop"
-             StartupUri="MainWindow.xaml">
+             xmlns:converters="clr-namespace:ModernInventory.Desktop.Presentation.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Presentation/Themes/Theme.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Global Application Converters -->
+            <converters:BooleanToVisibilityConverter x:Key="BoolToVis" />
+            <converters:BooleanToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True" />
+            <converters:EqualityToBooleanConverter x:Key="EqualityToBoolConverter" />
+            <converters:CollectionEmptyToVisibilityConverter x:Key="CollectionEmptyToVis" />
+            <converters:CollectionEmptyToVisibilityConverter x:Key="CollectionNotEmptyToVis" Invert="True" />
+            <converters:CurrencyFormatConverter x:Key="CurrencyConverter" />
+            <converters:StringNullOrEmptyToVisibilityConverter x:Key="StringToVis" />
+            <converters:StringNullOrEmptyToVisibilityConverter x:Key="InvertedStringToVis" Invert="True" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

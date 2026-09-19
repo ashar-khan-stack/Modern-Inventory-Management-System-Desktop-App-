@@ -4,15 +4,17 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:conv="clr-namespace:ModernInventory.Desktop.Presentation.Converters"
+             xmlns:sec="clr-namespace:ModernInventory.Desktop.Infrastructure.Security"
              mc:Ignorable="d" 
              d:DesignHeight="780" d:DesignWidth="900">
 
     <UserControl.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:BooleanToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True" />
     </UserControl.Resources>
 
     <Grid Background="#0A0F1D">
-        <Border Width="520" HorizontalAlignment="Center" VerticalAlignment="Center"
+        <Border Width="540" HorizontalAlignment="Center" VerticalAlignment="Center"
                 Background="#131D31" BorderBrush="#22324F" BorderThickness="1"
                 CornerRadius="12" Padding="32">
             <StackPanel>
@@ -63,7 +65,7 @@
                     </StackPanel>
                 </Grid>
 
-                <!-- Password & Confirm Password -->
+                <!-- Password & Confirm Password with Eye Toggles -->
                 <Grid Margin="0,0,0,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -71,14 +73,72 @@
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
+                    <!-- Password Field -->
                     <StackPanel Grid.Column="0">
                         <TextBlock Text="Password (PBKDF2 100k) *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
-                        <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                        <Grid>
+                            <PasswordBox Style="{StaticResource ModernPasswordBoxStyle}" 
+                                         Height="36" 
+                                         Padding="10,6,36,6"
+                                         sec:PasswordBoxHelper.BindPassword="True"
+                                         sec:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolToVis}}" />
+
+                            <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
+                                     Style="{StaticResource ModernTextBoxStyle}" 
+                                     Height="36" 
+                                     Padding="10,6,36,6"
+                                     Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVis}}" />
+
+                            <Button Command="{Binding TogglePasswordVisibilityCommand}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,4,0"
+                                    Width="30" Height="30"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    ToolTip="Show / Hide Password">
+                                <Grid>
+                                    <TextBlock Text="👁️" FontSize="13" Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVis}}" />
+                                    <TextBlock Text="🔒" FontSize="13" Visibility="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolToVis}}" />
+                                </Grid>
+                            </Button>
+                        </Grid>
                     </StackPanel>
 
+                    <!-- Confirm Password Field -->
                     <StackPanel Grid.Column="2">
                         <TextBlock Text="Confirm Password *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
-                        <TextBox Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Height="36" />
+                        <Grid>
+                            <PasswordBox Style="{StaticResource ModernPasswordBoxStyle}" 
+                                         Height="36" 
+                                         Padding="10,6,36,6"
+                                         sec:PasswordBoxHelper.BindPassword="True"
+                                         sec:PasswordBoxHelper.BoundPassword="{Binding ConfirmPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding IsConfirmPasswordVisible, Converter={StaticResource InvertedBoolToVis}}" />
+
+                            <TextBox Text="{Binding ConfirmPassword, UpdateSourceTrigger=PropertyChanged}" 
+                                     Style="{StaticResource ModernTextBoxStyle}" 
+                                     Height="36" 
+                                     Padding="10,6,36,6"
+                                     Visibility="{Binding IsConfirmPasswordVisible, Converter={StaticResource BoolToVis}}" />
+
+                            <Button Command="{Binding ToggleConfirmPasswordVisibilityCommand}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,4,0"
+                                    Width="30" Height="30"
+                                    Background="Transparent"
+                                    BorderThickness="0"
+                                    Cursor="Hand"
+                                    ToolTip="Show / Hide Password">
+                                <Grid>
+                                    <TextBlock Text="👁️" FontSize="13" Visibility="{Binding IsConfirmPasswordVisible, Converter={StaticResource BoolToVis}}" />
+                                    <TextBlock Text="🔒" FontSize="13" Visibility="{Binding IsConfirmPasswordVisible, Converter={StaticResource InvertedBoolToVis}}" />
+                                </Grid>
+                            </Button>
+                        </Grid>
                     </StackPanel>
                 </Grid>
 

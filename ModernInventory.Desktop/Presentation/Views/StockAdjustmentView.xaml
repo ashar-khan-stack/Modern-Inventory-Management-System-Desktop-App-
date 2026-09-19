@@ -75,7 +75,7 @@
                         <TextBlock Text="SELECT PRODUCT *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,4" />
                         <ComboBox ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}"
                                   DisplayMemberPath="Name" Margin="0,0,0,16"
-                                  Background="#0F172A" Foreground="White" Padding="10,8" />
+                                  Style="{StaticResource ModernComboBoxStyle}" Height="36" />
 
                         <!-- Adjustment Type & Date -->
                         <Grid Margin="0,0,0,16">
@@ -87,7 +87,7 @@
                             <StackPanel Grid.Column="0" Margin="0,0,8,0">
                                 <TextBlock Text="ADJUSTMENT TYPE *" Foreground="{StaticResource TextMutedBrush}" FontSize="11" FontWeight="Bold" Margin="0,0,0,4" />
                                 <ComboBox ItemsSource="{Binding AdjustmentTypes}" SelectedItem="{Binding SelectedAdjustmentType}"
-                                          Background="#0F172A" Foreground="White" Padding="10,8" />
+                                          Style="{StaticResource ModernComboBoxStyle}" Height="36" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1">

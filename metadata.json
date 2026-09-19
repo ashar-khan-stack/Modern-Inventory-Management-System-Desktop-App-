@@ -1,5 +1,5 @@
 {
-  "name": "Modern Inventory Management System(Desktop App)",
+  "name": "Modern Inventory Management System",
   "description": "Desktop business inventory, accounting, point-of-sale, and tax invoice system with high-performance offline-first local persistence.",
   "requestFramePermissions": [],
   "majorCapabilities": [

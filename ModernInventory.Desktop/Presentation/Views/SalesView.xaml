@@ -87,7 +87,7 @@
                              Style="{StaticResource ModernTextBoxStyle}" Tag="Search Invoice # or Notes..." />
                     
                     <ComboBox Width="130" SelectedValue="{Binding FilterPeriod}" SelectedValuePath="Content"
-                              Background="#0F172A" Foreground="White" Padding="8,6" Margin="8,0,0,0">
+                              Style="{StaticResource ModernComboBoxStyle}" Height="36" Margin="8,0,0,0">
                         <ComboBoxItem Content="All" IsSelected="True" />
                         <ComboBoxItem Content="Today" />
                         <ComboBoxItem Content="This Month" />

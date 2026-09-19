@@ -42,7 +42,7 @@
                     <!-- Product Filter Dropdown -->
                     <ComboBox Width="200" ItemsSource="{Binding Products}" SelectedItem="{Binding FilterProduct}"
                               DisplayMemberPath="Name" Margin="8,0,0,0"
-                              Background="#0F172A" Foreground="White" Padding="8,6" />
+                              Style="{StaticResource ModernComboBoxStyle}" Height="36" />
 
                     <Button Content="Filter" Command="{Binding RefreshCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="8,0,0,0" Padding="12,6" />
                     <Button Content="Clear" Command="{Binding ClearFilterCommand}" Background="#334155" Foreground="White" Margin="6,0,0,0" Padding="10,6" BorderThickness="0" Cursor="Hand" />

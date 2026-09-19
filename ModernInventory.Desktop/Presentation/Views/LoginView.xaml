@@ -4,11 +4,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:conv="clr-namespace:ModernInventory.Desktop.Presentation.Converters"
+             xmlns:sec="clr-namespace:ModernInventory.Desktop.Infrastructure.Security"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="900">
 
     <UserControl.Resources>
         <conv:BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <conv:BooleanToVisibilityConverter x:Key="InvertedBoolToVis" Invert="True" />
     </UserControl.Resources>
 
     <Grid Background="#0A0F1D">
@@ -22,7 +24,7 @@
                         <TextBlock Text="MI" Foreground="White" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <TextBlock Text="Modern Inventory System" Foreground="White" FontWeight="Bold" FontSize="20" HorizontalAlignment="Center" />
-                    <TextBlock Text="Windows Desktop Edition - Pakistan" Foreground="{StaticResource TextMutedBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0" />
+                    <TextBlock Text="Windows Desktop Edition - Offline-First" Foreground="{StaticResource TextMutedBrush}" FontSize="12" HorizontalAlignment="Center" Margin="0,4,0,0" />
                 </StackPanel>
 
                 <!-- Error Alert Box -->
@@ -35,13 +37,41 @@
                 <TextBlock Text="Email Address" Foreground="{StaticResource TextMutedBrush}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6" />
                 <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,16" Height="38" />
 
-                <!-- Password Input -->
+                <!-- Password Input with Eye Visibility Toggle -->
                 <TextBlock Text="Password" Foreground="{StaticResource TextMutedBrush}" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6" />
-                <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource ModernTextBoxStyle}" Margin="0,0,0,16" Height="38" />
+                <Grid Margin="0,0,0,16">
+                    <PasswordBox Style="{StaticResource ModernPasswordBoxStyle}" 
+                                 Height="38" 
+                                 Padding="12,8,40,8"
+                                 sec:PasswordBoxHelper.BindPassword="True"
+                                 sec:PasswordBoxHelper.BoundPassword="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolToVis}}" />
+
+                    <TextBox Text="{Binding Password, UpdateSourceTrigger=PropertyChanged}" 
+                             Style="{StaticResource ModernTextBoxStyle}" 
+                             Height="38" 
+                             Padding="12,8,40,8"
+                             Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVis}}" />
+
+                    <Button Command="{Binding TogglePasswordVisibilityCommand}"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Margin="0,0,4,0"
+                            Width="34" Height="34"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            ToolTip="Show / Hide Password">
+                        <Grid>
+                            <TextBlock Text="👁️" FontSize="14" Visibility="{Binding IsPasswordVisible, Converter={StaticResource BoolToVis}}" />
+                            <TextBlock Text="🔒" FontSize="14" Visibility="{Binding IsPasswordVisible, Converter={StaticResource InvertedBoolToVis}}" />
+                        </Grid>
+                    </Button>
+                </Grid>
 
                 <!-- Remember Me & Forgot Password -->
                 <Grid Margin="0,0,0,20">
-                    <CheckBox Content="Remember me (30 days)" IsChecked="{Binding RememberMe}" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
+                    <CheckBox Content="Remember login on this computer" IsChecked="{Binding RememberMe}" Foreground="{StaticResource TextMutedBrush}" VerticalAlignment="Center" />
                     <Button Content="Forgot password?" Command="{Binding GoToForgotPasswordCommand}" Background="Transparent" Foreground="{StaticResource PrimaryBrush}" BorderThickness="0" Cursor="Hand" HorizontalAlignment="Right" FontSize="12" />
                 </Grid>
 
